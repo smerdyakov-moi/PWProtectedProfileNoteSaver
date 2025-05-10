@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Page</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f6f8; height: 100vh; display: flex; flex-direction: column;">
+
+  <!-- Main Content Area -->
+  <div style="flex: 1; display: flex; justify-content: space-between; padding: 20px; box-sizing: border-box;">
+
+    <!-- Left Column -->
+    <div style="display: flex; flex-direction: column; justify-content: space-between;">
+
+      <!-- Top Left: Profile Image -->
+      <img src="<%= userx.image %>" alt="Profile Image" style="width: 120px; height: auto; border-radius: 10px;">
+
+      <!-- Bottom Left: Log Out Button -->
+      <form method="get" action="/logout">
+        <button type="submit" style="padding: 10px 20px; background-color: #f44336; color: white; border: none; border-radius: 5px;">Log Out</button>
+      </form>
+
+    </div>
+
+    <!-- Right Column -->
+    <div style="text-align: right;">
+
+      <!-- Top Right: Username and Email -->
+      <p style="font-size: 18px; margin: 5px 0;"><strong>Username:</strong> <%= userx.username %></p>
+      <p style="font-size: 18px; margin: 5px 0;"><strong>Email:</strong> <%= userx.email %></p>
+
+      <!-- Top Right Below Info: Edit Profile Button -->
+      <form method="get" action="/editProfile/<%= userx._id %>">
+        <button type="submit" style="margin-top: 10px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">Edit Profile</button>
+      </form>
+      <form method="get" action="/deleteProfile/<%= userx._id %>">
+        <button type="submit" style="margin-top: 10px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">Delete Profile</button>
+      </form>
+      <form method="get" action="/readFiles/<%= userx._id %>">
+        <button type="submit" style="margin-top: 10px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">Read Files</button>
+      </form>
+    </div>
+
+  </div>
+
+</body>
+</html>

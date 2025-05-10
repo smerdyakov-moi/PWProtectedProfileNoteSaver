@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Note Displayer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f4f6f8] text-gray-800 font-sans min-h-screen flex flex-col items-center pt-10">
+
+  <!-- Centered filename -->
+  <h1 class="text-3xl font-semibold tracking-tight mb-4 text-gray-900">
+    <%= filename.replace('.txt', '') %>
+  </h1>
+
+  <!-- Content container -->
+  <div class="w-full max-w-2xl px-4 bg-white shadow-md rounded-lg p-6 border border-gray-200">
+    <p class="text-lg whitespace-pre-wrap leading-relaxed">
+      <%= data %>
+    </p>
+  </div>
+
+</body>
+</html>
