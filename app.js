@@ -146,7 +146,7 @@ app.get('/fileView/:id/:fileName', checkAuth,(req, res) => {
 });
 
 app.get('/fileEdit/:id/:fileName',checkAuth, (req,res)=>{
-    if (req.user.id !== req.params.id) return res.status(403).send("Forbidden")
+    if (req.user.id !== req.params.id) return res.status(403).send("Forbidden") // Simple Protection
     const {id,fileName} = req.params
     fs.readFile(`./Folders/${id}/${fileName}`,'utf-8',(err,data)=>{
         if(err){console.error(err) 
