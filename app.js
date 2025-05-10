@@ -105,7 +105,7 @@ app.post('/update/:userid', checkAuth, async(req,res)=>
 })
 
 app.get('/deleteProfile/:ID',checkAuth, async(req,res)=>{
-    if (req.user.id !== req.params.id) return res.status(403).send("Forbidden")
+    if (req.user.id !== req.params.ID) return res.status(403).send("Forbidden")
     const {ID} = req.params // req.params is used only when dynamic routing is applied. Otherwise, any thing dealing with the frontend aspect will normally
     //result in req.body as seen in the /create route where the client enters
 
