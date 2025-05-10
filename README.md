@@ -1,1 +1,1 @@
-Idk man the user protection kinda sucks. I figured out route protection but can't exactly stop the user from editing files
+Added protection: Will prevent other users for editing your profile or files
