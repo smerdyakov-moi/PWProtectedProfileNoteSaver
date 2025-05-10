@@ -88,81 +88,91 @@ function checkAuth(req, res, next) {
 
 //Added
 
-app.get('/editProfile/:id',checkAuth, async (req,res)=>{
-    if (req.user.id !== req.params.id) return res.status(403).send("Forbidden")
-    let user = await userModel.findOne({_id:req.params.id}) //We are using findOne here so we can return only an object . Thus, no destructuring is needed \
-    // {user} unlike the previous /read route where {users:allusers} had to be implemented
+// ✅ Secure editProfile
+app.get('/editProfile/:id', checkAuth, async (req, res) => {
+    if (req.user.id !== req.params.id) return res.status(403).send("Forbidden");
 
-    res.render('UpdatePage',{user}) //The update page will be rendered along with the object 'user' we are deleting
-})
-
-app.post('/update/:userid', checkAuth, async(req,res)=>
-{
-    if (req.user.id !== req.params.id) return res.status(403).send("Forbidden")
-    let {username,email,image} = req.body //Stores the updated (if any) record
-    let user = await userModel.findOneAndUpdate({_id:req.params.userid}, {username,image}, {new:true}) // Updates the user
-    res.redirect('/userSitePage') // Redirects to the read page
-})
-
-app.get('/deleteProfile/:ID',checkAuth, async(req,res)=>{
-    if (req.user.id !== req.params.ID) return res.status(403).send("Forbidden")
-    const {ID} = req.params // req.params is used only when dynamic routing is applied. Otherwise, any thing dealing with the frontend aspect will normally
-    //result in req.body as seen in the /create route where the client enters
-
-    let deletedUser = await userModel.findOneAndDelete({_id:ID}) //Simple Deletion of the record
-    res.cookie("token","")
-    fs.rmdir(`./Folders/${ID}`,{recursive:true},(err)=>{})
-    res.redirect('/') //Redirects to the main page
-})
-
-app.get('/readFiles/:id',checkAuth,(req,res)=>
-    {
-        if (req.user.id !== req.params.id) return res.status(403).send("Forbidden")        
-        const id = req.params.id
-        fs.readdir(`./Folders/${id}`,function(err,files){
-            res.render('index_updt',{files: files, id:id})
-        })
-        
-})
-
-app.post('/createFile/:id',checkAuth,(req,res)=>
-    { 
-        if (req.user.id !== req.params.id) return res.status(403).send("Forbidden")
-        const id = req.params.id
-        //Writing a file into the directory which will be retrieved in the frontend aspect + req.body reason is because the title,description are under that HTML aspect
-        fs.writeFile(`./Folders/${id}/${req.body.title.split(' ').join('')}.txt`,req.body.description,function(err){
-            res.redirect(`/readFiles/${id}`) // As soon you as you click on the submit button, the route is redirected to primary
-        })
-    })
-
-app.get('/fileView/:id/:fileName', checkAuth,(req, res) => {
-  if (req.user.id !== req.params.id) return res.status(403).send("Forbidden")
-  const { id, fileName } = req.params
-  fs.readFile(`./Folders/${id}/${fileName}`, 'utf8', (err, data) => {
-    if (err) {console.error(err)
-        return}
-    res.render('show', { filename: fileName, data })
-  });
+    let user = await userModel.findOne({ _id: req.params.id });
+    res.render('UpdatePage', { user });
 });
 
-app.get('/fileEdit/:id/:fileName',checkAuth, (req,res)=>{
-    if (req.user.id !== req.params.id) return res.status(403).send("Forbidden") // Simple Protection
-    const {id,fileName} = req.params
-    fs.readFile(`./Folders/${id}/${fileName}`,'utf-8',(err,data)=>{
-        if(err){console.error(err) 
-            return}
-        res.render('edit',{filename:fileName,data,id})
-    })
-    
-})
+// ✅ Secure update
+app.post('/update/:userid', checkAuth, async (req, res) => {
+    if (req.user.id !== req.params.userid) return res.status(403).send("Forbidden");
 
-app.post('/updateFile/:id',checkAuth, (req,res)=>{
-    if (req.user.id !== req.params.id) return res.status(403).send("Forbidden") // Simple Protection
-    const {id} = req.params
-    const fileName = req.body.title.split(' ').join('') + '.txt'
-    fs.writeFile(`./Folders/${id}/${req.body.title.split(' ').join('')}.txt`,req.body.description,function(err){ res.redirect(`/fileView/${id}/${fileName}`)}
-)
-})
+    let { username, email, image } = req.body;
+    await userModel.findOneAndUpdate({ _id: req.params.userid }, { username, image }, { new: true });
+    res.redirect('/userSitePage');
+});
+
+// ✅ Secure delete
+app.get('/deleteProfile/:ID', checkAuth, async (req, res) => {
+    if (req.user.id !== req.params.ID) return res.status(403).send("Forbidden");
+
+    let deletedUser = await userModel.findOneAndDelete({ _id: req.params.ID });
+    res.cookie("token", "");
+    fs.rmdir(`./Folders/${req.params.ID}`, { recursive: true }, (err) => {});
+    res.redirect('/');
+});
+
+// ✅ Secure file read
+app.get('/readFiles/:id', checkAuth, (req, res) => {
+    if (req.user.id !== req.params.id) return res.status(403).send("Forbidden");
+
+    const id = req.params.id;
+    fs.readdir(`./Folders/${id}`, function (err, files) {
+        res.render('index_updt', { files: files, id: id });
+    });
+});
+
+// ✅ Secure file create
+app.post('/createFile/:id', checkAuth, (req, res) => {
+    if (req.user.id !== req.params.id) return res.status(403).send("Forbidden");
+
+    const id = req.params.id;
+    fs.writeFile(`./Folders/${id}/${req.body.title.split(' ').join('')}.txt`, req.body.description, function (err) {
+        res.redirect(`/readFiles/${id}`);
+    });
+});
+
+// ✅ Secure file view
+app.get('/fileView/:id/:fileName', checkAuth, (req, res) => {
+    if (req.user.id !== req.params.id) return res.status(403).send("Forbidden");
+
+    const { id, fileName } = req.params;
+    fs.readFile(`./Folders/${id}/${fileName}`, 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        res.render('show', { filename: fileName, data });
+    });
+});
+
+// ✅ Secure file edit
+app.get('/fileEdit/:id/:fileName', checkAuth, (req, res) => {
+    if (req.user.id !== req.params.id) return res.status(403).send("Forbidden");
+
+    const { id, fileName } = req.params;
+    fs.readFile(`./Folders/${id}/${fileName}`, 'utf-8', (err, data) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        res.render('edit', { filename: fileName, data, id });
+    });
+});
+
+// ✅ Secure file update
+app.post('/updateFile/:id', checkAuth, (req, res) => {
+    if (req.user.id !== req.params.id) return res.status(403).send("Forbidden");
+
+    const { id } = req.params;
+    const fileName = req.body.title.split(' ').join('') + '.txt';
+    fs.writeFile(`./Folders/${id}/${fileName}`, req.body.description, function (err) {
+        res.redirect(`/fileView/${id}/${fileName}`);
+    });
+});
 
 
 app.listen(3000)
